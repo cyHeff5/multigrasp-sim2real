@@ -1,0 +1,7 @@
+shape,mass_kg,lateral_friction,yaw_rad,size_cm,n_success,n_trials,success_rate
+sphere,0.15,1.15,0.0,4.0,9,20,0.45
+sphere,0.15,1.15,0.0,5.0,3,20,0.15
+sphere,0.15,1.15,0.0,6.0,1,20,0.05
+cube,0.15,1.15,0.0,4.0,10,20,0.5
+cube,0.15,1.15,0.0,5.0,12,20,0.6
+cube,0.15,1.15,0.0,6.0,7,20,0.35

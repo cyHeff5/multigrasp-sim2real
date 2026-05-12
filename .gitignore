@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Trainierte Modelle und TensorBoard-Logs (zu groß für git)
+artifacts/models/
+artifacts/logs/

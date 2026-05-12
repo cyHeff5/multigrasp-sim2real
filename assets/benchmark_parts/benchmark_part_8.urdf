@@ -1,0 +1,18 @@
+<robot name="benchmark_part_8">
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="benchmark_parts_stl/benchmark_part_8.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+    <origin xyz="0.2300000013544966 9.58781421668912e-14 -0.05123590121955741" rpy="0 0 0" /></visual>
+    <collision>
+      <geometry>
+        <mesh filename="benchmark_parts_stl/benchmark_part_8_vhacd.obj" scale="0.01 0.01 0.01" />
+      </geometry>
+    <origin xyz="0.2300000013544966 9.58781421668912e-14 -0.05123590121955741" rpy="0 0 0" /></collision>
+    <inertial>
+      <mass value="0.1" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
+    </inertial>
+  </link>
+</robot>

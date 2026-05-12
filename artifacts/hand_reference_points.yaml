@@ -1,0 +1,139 @@
+hand_urdf: C:\Users\leonp\Documents\DFKI\multigrasp-rl-sim2real\multigrasp-rl-sim2real\src\sim\assets\ar10_description\urdf\ar10.urdf
+hand_pose_world:
+  position_xyz:
+  - 0.3
+  - 0.0
+  - 0.18
+  orientation_xyzw:
+  - 0.707107
+  - -0.0
+  - -0.0
+  - 0.707107
+reference_points:
+  # ── Neue Haupt-Greiftypen ─────────────────────────────────────────────
+  power:
+    position_hand_xyz:
+    - -0.01475
+    - 0.013732
+    - 0.115982
+    normal_hand_xyz:
+    - 0.0
+    - 0.992775
+    - 0.11999
+    tangent_hand_xyz:
+    - 1.0
+    - 0.0
+    - 0.0
+  precision:
+    position_hand_xyz:
+    - -0.03875
+    - 0.01283
+    - 0.121998
+    normal_hand_xyz:
+    - -0.027817
+    - 0.992852
+    - 0.116067
+    tangent_hand_xyz:
+    - 0.231399
+    - 0.119354
+    - -0.96551
+    thumb_tip_hand_xyz:
+    - -0.040079
+    - 0.081893
+    - 0.100338
+    thumb_tip_normal_xyz:
+    - -0.721351
+    - -0.660581
+    - 0.20805
+    thumb_pregrasp_distance_mm: 8.0
+    thumb_tip_normal_hand_xyz:
+    - 0.0
+    - 0.0
+    - 1.0
+    thumb_tip_tangent_hand_xyz:
+    - 0.0
+    - 1.0
+    - 0.0
+  # ── Legacy-Einträge (für Rückwärtskompatibilität) ─────────────────────
+  medium_wrap:
+    position_hand_xyz:
+    - -0.01475
+    - 0.013732
+    - 0.115982
+    normal_hand_xyz:
+    - 0.0
+    - 0.992775
+    - 0.11999
+    tangent_hand_xyz:
+    - 1.0
+    - 0.0
+    - 0.0
+  tripod:
+    position_hand_xyz:
+    - -0.03875
+    - 0.01283
+    - 0.121998
+    normal_hand_xyz:
+    - -0.027817
+    - 0.992852
+    - 0.116067
+    tangent_hand_xyz:
+    - 0.231399
+    - 0.119354
+    - -0.96551
+    thumb_tip_hand_xyz:
+    - -0.040079
+    - 0.081893
+    - 0.100338
+    thumb_tip_normal_xyz:
+    - -0.721351
+    - -0.660581
+    - 0.20805
+    thumb_pregrasp_distance_mm: 8.0
+    thumb_tip_normal_hand_xyz:
+    - 0.0
+    - 0.0
+    - 1.0
+    thumb_tip_tangent_hand_xyz:
+    - 0.0
+    - 1.0
+    - 0.0
+  thumb_1_finger:
+    position_hand_xyz:
+    - -0.053929
+    - 0.01283
+    - 0.118463
+    normal_hand_xyz:
+    - -0.286142
+    - 0.958187
+    - -0.000763
+    tangent_hand_xyz:
+    - 0.958183
+    - 0.286143
+    - 0.002555
+  power_sphere:
+    position_hand_xyz:
+    - -0.01475
+    - 0.013732
+    - 0.115982
+    normal_hand_xyz:
+    - 0.0
+    - 0.992775
+    - 0.11999
+    tangent_hand_xyz:
+    - 1.0
+    - 0.0
+    - 0.0
+  lateral_pinch:
+    position_hand_xyz:
+    - -0.057749
+    - 0.008739
+    - 0.118463
+    normal_hand_xyz:
+    - -0.967819
+    - -0.251646
+    - 0.0002
+    tangent_hand_xyz:
+    - -0.251646
+    - 0.967819
+    - 5.2e-05

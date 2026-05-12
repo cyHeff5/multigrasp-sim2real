@@ -1,0 +1,79 @@
+# Precision Grasp - Daumen + Finger pinchen das Objekt.
+# Feix et al. 2014: Tip Pinch (2-Punkt), Tripod (3-Punkt).
+
+grasp_type: precision
+
+# Nur Daumen-Abduktion (servo0) + Mittelfinger/Zeigefinger (servo6-9).
+# Pinky, Ring und Daumen-MCP bleiben offen.
+active_joints: [servo0, servo6, servo7, servo8, servo9]
+
+# Welche Joints zu welchem Finger gehören - bestimmt die Observations-Bits (1 Bit pro Finger).
+finger_joints:
+  middle: [servo6, servo7]
+  index:  [servo8, servo9]
+
+# Lift wird ausgelöst wenn trigger_n Finger gleichzeitig Kontakt haben.
+# Westling & Johansson 1984: Preload -> Loading -> Lift.
+trigger_n: 1                       # Anzahl Finger für Trigger
+trigger_confirmation_steps: 3      # muss trigger_n consecutive Schritte erfüllt sein
+stabilization_steps: 30            # Schritte zwischen Trigger und Lift-Test
+n_target: 1                        # Tip Pinch ist valider Precision-Grasp
+
+action:
+  delta_norm: 0.005                # max. Schrittgröße pro Policy-Step für Finger-Joints (normalisiert)
+  thumb_abduction_delta: 0.005     # Schrittgröße für Daumen-Abduktion (servo0, bidirektional)
+  thumb_abduction_range: [0.45, 0.55]  # erlaubter Positionsbereich für Daumen-Abduktion
+  pip_caps: {servo7: 0.5, servo9: 0.5}   # begrenzt PIP-Joints, verhindert Überfahren des Objekts
+
+observation:
+  # q_target - q_measured > threshold -> Finger gilt als im Kontakt (binäres Signal).
+  # Sim-Wert; echte Schwelle wird per threshold_calibration.py bestimmt.
+  threshold: 0.05
+
+reward:
+  w_contact:     0.1               # Reward-Gewicht pro kontaktierendem Finger
+  w_pedestal:    0.2               # Penalty wenn Objekt das Podest berührt
+  r_step:       -0.01              # Strafe pro Schritt, zwingt zur Effizienz
+  r_lift_success: 10.0
+  r_lift_fail:   -5.0
+
+physics:
+  motor_force:        {min: 4.0, max: 6.0}    # Motormoment in Nm, pro Episode randomisiert
+  fingertip_friction: {min: 1.5, max: 2.5}    # Reibwert Silikon-Fingerkappen, pro Episode randomisiert
+  # PD-Regler Parameter für PyBullet Gelenk-Tracking.
+  position_gain: 10.0
+  velocity_gain: 1.0
+  joint_damping: 0.1
+  max_velocity:  0.5               # max. Gelenkwinkelgeschwindigkeit in rad/s (Firgelli Datenblatt)
+
+sampler:
+  # Feix et al. 2014 - Objektgrößen für Precision Grasp (kleiner als Power).
+  shapes: [sphere, cube, cylinder, rect_cylinder]
+  sphere:        {size_cm:      {min: 4.0, max: 6.0}}
+  cube:          {size_cm:      {min: 4.0, max: 6.0}}
+  cylinder:      {thickness_cm: {min: 1.0, max: 3.0}, height_cm: {min: 5.0, max: 12.0}}
+  rect_cylinder: {thickness_cm: {min: 1.0, max: 3.0}, width_cm:  {min: 1.0, max: 3.0}, height_cm: {min: 5.0, max: 12.0}}
+  mass_kg:          {min: 0.05, max: 0.25}    # pro Episode randomisiert
+  lateral_friction: {min: 0.8,  max: 1.5}    # pro Episode randomisiert
+
+pregrasp:
+  distance_m:  0.004                # Abstand Hand-Referenzpunkt zur Objekt-Oberfläche
+  jitter_xy_m: 0.005               # zufällige XY-Verschiebung der Pregrasp-Position
+  jitter_z_m:  0.002               # zufällige Z-Verschiebung
+
+episode:
+  max_steps:    300                # Episodenlänge falls kein Trigger ausgelöst wird
+  settle_steps: 15                 # Physik-Settle nach Spawn, bevor Episode beginnt
+  sim_hz:       120
+  substeps:     3                  # Sim-Schritte pro Policy-Step -> 40 Hz Kontrollfrequenz
+
+lift:
+  height_m:      0.05
+  lift_steps:    30
+  hold_steps:    30
+  success_m:     0.03              # Objekt muss >= 3 cm mitgehoben werden
+  drop_tilt_rad: 0.8               # Objekt-Neigung ab der der Griff als Drop gilt (~46°)
+
+magnet:
+  enabled: true
+  k: 5.0                           # Federkonstante des simulierten Podest-Magneten (verhindert Wegrollen)

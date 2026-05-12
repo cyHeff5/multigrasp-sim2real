@@ -1,0 +1,541 @@
+parts:
+- part_id: 1
+  grasp_points:
+  - id: gp_001
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.038979
+    - -0.114752
+    - 0.090501
+    pregrasp_orientation_obj_xyzw:
+    - -0.707107
+    - 0.0
+    - 0.0
+    - 0.707107
+  - id: gp_002
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.01427
+    - -0.09432
+    - 0.059643
+    pregrasp_orientation_obj_xyzw:
+    - -0.748328
+    - -0.0
+    - -0.0
+    - 0.663329
+  - id: gp_003
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.0
+    - -0.707107
+    pregrasp_position_obj_xyz:
+    - 0.082277
+    - -0.015767
+    - -0.128244
+    pregrasp_orientation_obj_xyzw:
+    - 0.0
+    - 0.0
+    - 0.707107
+    - 0.707107
+- part_id: 2
+  grasp_points:
+  - id: gp_001
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.039205
+    - -0.130599
+    - 0.102908
+    pregrasp_orientation_obj_xyzw:
+    - -0.708296
+    - 0.003746
+    - -0.003733
+    - 0.705896
+  - id: gp_002
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.014035
+    - -0.112532
+    - 0.071144
+    pregrasp_orientation_obj_xyzw:
+    - -0.746859
+    - -0.002364
+    - -0.002679
+    - 0.664973
+  - id: gp_003
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.083921
+    - -0.117672
+    - -0.064551
+    pregrasp_orientation_obj_xyzw:
+    - 0.503305
+    - -0.496673
+    - -0.503305
+    - -0.496673
+- part_id: 3
+  grasp_points:
+  - id: gp_001
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.045115
+    - -0.135484
+    - 0.137357
+    pregrasp_orientation_obj_xyzw:
+    - -0.705399
+    - -0.003477
+    - 0.003494
+    - 0.708793
+  - id: gp_002
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.015622
+    - -0.114302
+    - 0.110859
+    pregrasp_orientation_obj_xyzw:
+    - -0.748447
+    - 0.00339
+    - 0.003823
+    - 0.663175
+  - id: gp_003
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.043636
+    - -0.115213
+    - -0.004856
+    pregrasp_orientation_obj_xyzw:
+    - -0.523639
+    - 0.475076
+    - 0.524572
+    - 0.474266
+- part_id: 4
+  grasp_points:
+  - id: gp_001
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.056415
+    - -0.115593
+    - 0.014511
+    pregrasp_orientation_obj_xyzw:
+    - 0.529747
+    - -0.468512
+    - -0.528548
+    - -0.469576
+  - id: gp_002
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    pregrasp_position_obj_xyz:
+    - -0.042797
+    - 0.127595
+    - -0.155696
+    pregrasp_orientation_obj_xyzw:
+    - 0.0
+    - 0.0
+    - 1.0
+    - -0.0
+- part_id: 5
+  grasp_points:
+  - id: gp_001
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.0
+    - 0.707107
+    pregrasp_position_obj_xyz:
+    - 0.132827
+    - -0.033993
+    - 0.116566
+    pregrasp_orientation_obj_xyzw:
+    - -0.707104
+    - 0.707107
+    - -0.002148
+    - 0.000491
+  - id: gp_002
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.0
+    - 0.707107
+    pregrasp_position_obj_xyz:
+    - 0.091438
+    - -0.00729
+    - 0.114897
+    pregrasp_orientation_obj_xyzw:
+    - 0.720703
+    - -0.690955
+    - -0.038845
+    - 0.04075
+- part_id: 6
+  grasp_points:
+  - id: gp_001
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.707107
+    - 0.0
+    pregrasp_position_obj_xyz:
+    - 0.055975
+    - 0.113724
+    - 0.009688
+    pregrasp_orientation_obj_xyzw:
+    - 0.470065
+    - -0.527994
+    - 0.468022
+    - 0.530299
+  - id: gp_002
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.707107
+    - 0.0
+    pregrasp_position_obj_xyz:
+    - 0.083401
+    - 0.135767
+    - 0.034677
+    pregrasp_orientation_obj_xyzw:
+    - 0.499826
+    - -0.499826
+    - 0.500174
+    - 0.500174
+  - id: gp_003
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.707107
+    - 0.0
+    pregrasp_position_obj_xyz:
+    - 0.080027
+    - 0.115925
+    - 0.101601
+    pregrasp_orientation_obj_xyzw:
+    - 0.501709
+    - -0.50171
+    - 0.498285
+    - 0.498285
+- part_id: 14
+  grasp_points:
+  - id: gp_001
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.081178
+    - -0.132592
+    - 0.021735
+    pregrasp_orientation_obj_xyzw:
+    - 0.500012
+    - -0.499988
+    - -0.500012
+    - -0.499988
+  - id: gp_002
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.0
+    - 0.707107
+    pregrasp_position_obj_xyz:
+    - 0.038112
+    - 0.084596
+    - 0.128721
+    pregrasp_orientation_obj_xyzw:
+    - 1.0
+    - 0.0
+    - 8.0e-06
+    - -0.0
+  - id: gp_003
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.0
+    - 0.707107
+    pregrasp_position_obj_xyz:
+    - 0.012333
+    - 0.055292
+    - 0.107246
+    pregrasp_orientation_obj_xyzw:
+    - 0.998192
+    - 9.0e-06
+    - 1.0e-06
+    - 0.060104
+- part_id: 7
+  grasp_points:
+  - id: gp_001
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.039724
+    - -0.12672
+    - 0.106974
+    pregrasp_orientation_obj_xyzw:
+    - -0.724315
+    - 0.0
+    - 0.0
+    - 0.68947
+- part_id: 8
+  grasp_points:
+  - id: gp_001
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.042635
+    - -0.120703
+    - -0.017822
+    pregrasp_orientation_obj_xyzw:
+    - -0.499845
+    - 0.500155
+    - 0.499844
+    - 0.500156
+  - id: gp_002
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.084385
+    - -0.115851
+    - 0.042159
+    pregrasp_orientation_obj_xyzw:
+    - 0.508449
+    - -0.491406
+    - -0.508449
+    - -0.491406
+- part_id: 9
+  grasp_points:
+  - id: gp_001
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.5
+    - -0.5
+    - 0.5
+    - 0.5
+    pregrasp_position_obj_xyz:
+    - -0.034476
+    - -0.08076
+    - 0.113838
+    pregrasp_orientation_obj_xyzw:
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+- part_id: 10
+  grasp_points:
+  - id: gp_001
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.038804
+    - -0.129986
+    - 0.110586
+    pregrasp_orientation_obj_xyzw:
+    - -0.709019
+    - -0.002433
+    - 0.00242
+    - 0.705181
+  - id: gp_002
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.014125
+    - -0.117114
+    - 0.079393
+    pregrasp_orientation_obj_xyzw:
+    - -0.747259
+    - -0.004439
+    - -0.005024
+    - 0.6645
+  - id: gp_003
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.107253
+    - -0.115043
+    - -0.040835
+    pregrasp_orientation_obj_xyzw:
+    - -0.503913
+    - 0.49346
+    - 0.506508
+    - 0.496002
+- part_id: 11
+  grasp_points:
+  - id: gp_001
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.707107
+    - 0.0
+    pregrasp_position_obj_xyz:
+    - 0.017179
+    - 0.109811
+    - -0.055331
+    pregrasp_orientation_obj_xyzw:
+    - 0.663816
+    - 1.1e-05
+    - -1.0e-05
+    - 0.747896
+  - id: gp_002
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.707107
+    - 0.0
+    - 0.707107
+    - 0.0
+    pregrasp_position_obj_xyz:
+    - -0.012757
+    - 0.124938
+    - 0.107674
+    pregrasp_orientation_obj_xyzw:
+    - 0.009257
+    - -0.706998
+    - 0.707094
+    - -0.009256
+- part_id: 12
+  grasp_points:
+  - id: gp_001
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.043686
+    - -0.112207
+    - -0.00976
+    pregrasp_orientation_obj_xyzw:
+    - -0.532285
+    - 0.465427
+    - 0.532725
+    - 0.465031
+  - id: gp_002
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.066819
+    - -0.12974
+    - -0.033546
+    pregrasp_orientation_obj_xyzw:
+    - -0.469829
+    - 0.528452
+    - 0.469829
+    - 0.528452
+- part_id: 13
+  grasp_points:
+  - id: gp_001
+    grasp_type: power
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.061549
+    - -0.11413
+    - -0.009901
+    pregrasp_orientation_obj_xyzw:
+    - 0.529148
+    - -0.469044
+    - -0.529148
+    - -0.469044
+  - id: gp_002
+    grasp_type: precision
+    object_orientation_xyzw:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    pregrasp_position_obj_xyz:
+    - 0.086765
+    - 0.041578
+    - 0.119394
+    pregrasp_orientation_obj_xyzw:
+    - 0.5
+    - 0.5
+    - -0.5
+    - -0.5

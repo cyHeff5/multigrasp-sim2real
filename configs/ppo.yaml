@@ -1,0 +1,37 @@
+# PPO Hyperparameter (Stable-Baselines3).
+
+# Schritte pro Umgebung die gesammelt werden bevor ein Update stattfindet.
+# Gesamter Rollout-Buffer pro Update: n_steps * n_envs Transitions.
+n_steps:        2048
+
+# Mini-Batch Größe für den Gradient-Update.
+batch_size:     64
+
+# Wie oft der gesamte Rollout-Buffer pro Update durchlaufen wird.
+n_epochs:       10
+
+learning_rate:  3.0e-4
+
+# Discount-Faktor - wie weit die Policy in die Zukunft schaut.
+gamma:          0.995
+
+# GAE Lambda - Tradeoff zwischen Bias und Varianz im Advantage-Schätzer.
+gae_lambda:     0.95
+
+# Clipping der Policy-Update-Größe, verhindert zu große Schritte.
+clip_range:     0.2
+
+# Entropie-Bonus - auf 0 gesetzt da Policy deterministisch konvergieren soll.
+ent_coef:       0.0
+
+# Gewichtung des Value-Function-Loss relativ zum Policy-Loss.
+vf_coef:        0.5
+
+# Gradient Clipping gegen explodierende Gradienten.
+max_grad_norm:  0.5
+
+# Training-Setup
+total_timesteps: 10000000
+eval_freq:       50000      # alle N Schritte wird die Policy evaluiert
+n_eval_episodes: 50         # Episoden pro Evaluation
+checkpoint_freq: 50000      # alle N Schritte wird ein Checkpoint gespeichert
