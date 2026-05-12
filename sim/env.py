@@ -42,7 +42,9 @@ class GraspEnv(gymnasium.Env):
         self._fingers       = list(self._finger_joints.keys())
 
         self.observation_space = gymnasium.spaces.Box(
-            low=0.0, high=1.0, shape=(len(self._fingers),), dtype=np.float32,
+            low=0.0, high=1.0,
+            shape=(len(self._fingers) + len(self._active),),
+            dtype=np.float32,
         )
         self.action_space = gymnasium.spaces.Box(
             low=-1.0, high=1.0, shape=(len(self._active),), dtype=np.float32,
@@ -227,17 +229,24 @@ class GraspEnv(gymnasium.Env):
 
     # Observation 
     def _observation(self) -> np.ndarray:
-        # Pro Finger: 1 wenn mindestens ein Joint des Fingers q_delta > threshold.
+        # Kontakt-Bits: 1 wenn mindestens ein Joint des Fingers q_delta > threshold.
         threshold = self.cfg["observation"]["threshold"]
         delta_all = self._hand.q_delta_normalized()
-        out = np.zeros(len(self._fingers), dtype=np.float32)
+        contact = np.zeros(len(self._fingers), dtype=np.float32)
         for i, finger in enumerate(self._fingers):
             for joint_name in self._finger_joints[finger]:
                 joint_idx = CONTROL_JOINTS.index(joint_name)
                 if delta_all[joint_idx] > threshold:
-                    out[i] = 1.0
+                    contact[i] = 1.0
                     break
-        return out
+
+        # Propriozeption: normalisierte q_target der aktiven Joints ([0, 1]).
+        q_all = self._hand.q_target()
+        q_active = np.array(
+            [q_all[CONTROL_JOINTS.index(j)] for j in self._active],
+            dtype=np.float32,
+        )
+        return np.concatenate([contact, q_active])
 
     # Action mapping
     def _action_to_delta(self, action: np.ndarray) -> list[float]:

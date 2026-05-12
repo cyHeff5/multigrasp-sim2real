@@ -65,8 +65,8 @@ pregrasp:
 episode:
   max_steps:    300                # Episodenlänge falls kein Trigger ausgelöst wird
   settle_steps: 15                 # Physik-Settle nach Spawn, bevor Episode beginnt
-  sim_hz:       120
-  substeps:     3                  # Sim-Schritte pro Policy-Step -> 40 Hz Kontrollfrequenz
+  sim_hz:       240
+  substeps:     5                  # Sim-Schritte pro Policy-Step -> 48 Hz Kontrollfrequenz
 
 lift:
   height_m:      0.05

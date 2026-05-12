@@ -31,7 +31,7 @@ vf_coef:        0.5
 max_grad_norm:  0.5
 
 # Training-Setup
-total_timesteps: 10000000
+total_timesteps: 5000000
 eval_freq:       50000      # alle N Schritte wird die Policy evaluiert
-n_eval_episodes: 50         # Episoden pro Evaluation
+n_eval_episodes: 100        # Episoden pro Evaluation
 checkpoint_freq: 50000      # alle N Schritte wird ein Checkpoint gespeichert
