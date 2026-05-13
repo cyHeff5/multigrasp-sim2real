@@ -187,7 +187,7 @@ class GraspEnv(gymnasium.Env):
 
         self._step_count += 1
         obs       = self._observation()
-        n_contact = int(obs.sum())
+        n_contact = int(obs[:len(self._fingers)].sum())
 
         # Trigger State Machine (Westling & Johansson 1984):
         # trigger_confirmation_steps consecutive frames mit >= trigger_n Kontakten -> Trigger.
