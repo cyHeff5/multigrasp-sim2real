@@ -21,8 +21,8 @@ gae_lambda:     0.95
 # Clipping der Policy-Update-Größe, verhindert zu große Schritte.
 clip_range:     0.2
 
-# Entropie-Bonus - auf 0 gesetzt da Policy deterministisch konvergieren soll.
-ent_coef:       0.0
+# Entropie-Bonus verhindert Kollaps zu deterministischer Strategie.
+ent_coef:       0.01
 
 # Gewichtung des Value-Function-Loss relativ zum Policy-Loss.
 vf_coef:        0.5
