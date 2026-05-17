@@ -84,11 +84,12 @@ def _apply_action(action: np.ndarray, q_target: list[float], cfg: dict) -> list[
     """Mirror env._action_to_delta + PIP caps on the real hand."""
     delta = [0.0] * _HAND_DOF
     for i, joint_name in enumerate(cfg["active_joints"]):
-        a = float(action[i])
+        a = int(action[i])
         if joint_name == "servo0":
-            d = a * cfg["action"]["thumb_abduction_delta"]
+            step = cfg["action"]["thumb_abduction_delta"]
+            d = (-1.0 if a == 0 else 1.0 if a == 2 else 0.0) * step
         else:
-            d = max(0.0, a) * cfg["action"]["delta_norm"]
+            d = a * cfg["action"]["delta_norm"]
         delta[CONTROL_JOINTS.index(joint_name)] = d
 
     new_q = [max(0.0, min(1.0, q + d)) for q, d in zip(q_target, delta)]

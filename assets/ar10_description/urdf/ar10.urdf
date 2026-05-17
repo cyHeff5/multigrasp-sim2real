@@ -482,9 +482,9 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://ar10_description/meshes/fingertip-v9.STL" scale=".001 .001 .001" />
+        <box size=".015 .015 .03" />
       </geometry>
-      <origin xyz="-.009715 .011 -.015" rpy="1.57 0 0" />
+      <origin xyz="0 0 0" />
     </collision>
     <inertial>
       <mass value="0.003" />
@@ -624,9 +624,9 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://ar10_description/meshes/fingertip-v9.STL" scale=".001 .001 .001" />
+        <box size=".015 .015 .03" />
       </geometry>
-      <origin xyz="-.009715 .011 -.015" rpy="1.57 0 0" />
+      <origin xyz="0 0 0" />
     </collision>
     <inertial>
       <mass value="0.003" />
@@ -766,9 +766,9 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://ar10_description/meshes/fingertip-v9.STL" scale=".001 .001 .001" />
+        <box size=".015 .015 .03" />
       </geometry>
-      <origin xyz="-.009715 .011 -.015" rpy="1.57 0 0" />
+      <origin xyz="0 0 0" />
     </collision>
     <inertial>
       <mass value="0.003" />
@@ -908,9 +908,9 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://ar10_description/meshes/fingertip-v9.STL" scale=".001 .001 .001" />
+        <box size=".015 .015 .03" />
       </geometry>
-      <origin xyz="-.009715 .011 -.015" rpy="1.57 0 0" />
+      <origin xyz="0 0 0" />
     </collision>
     <inertial>
       <mass value="0.003" />
@@ -1031,9 +1031,9 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://ar10_description/meshes/fingertip-v9.STL" scale=".001 .001 .001" />
+        <box size=".015 .015 .03" />
       </geometry>
-      <origin xyz=".009715 .005 .005" rpy="2.55 3.14 0" />
+      <origin xyz="0 0 0" />
     </collision>
     <inertial>
       <mass value="0.003" />

@@ -38,8 +38,9 @@ FINGERTIP_EE_MAP = {
 # Startposition Daumen-Abduktion.
 SERVO0_INIT = 0.5
 
-# Kraftlimit für den Gear-Constraint.
-_GEAR_FORCE = 1000.0
+# Gear-Constraint sehr stark dass DIP rigid an PIP gekoppelt ist (4-Stab-Mechanik der echten Hand).
+# Damit zieht das PIP-Ratchet die Fingerspitze automatisch mit, ohne separate Behandlung.
+_GEAR_FORCE = 1.0e9
 
 
 class HandModel:
@@ -60,15 +61,20 @@ class HandModel:
         self._motor_force = _uniform(physics_cfg["motor_force"], rng)
         self._friction    = _uniform(physics_cfg["fingertip_friction"], rng)
 
-        # PD-Regler Parameter
-        self._pos_gain = float(physics_cfg["position_gain"])
-        self._vel_gain = float(physics_cfg["velocity_gain"])
+        # Joint-Damping + max_velocity. positionGain/velocityGain werden bewusst NICHT genutzt
+        # weil PyBullet sie ignoriert sobald maxVelocity in setJointMotorControl2 gesetzt ist
+        # (rate-limitierter Tracker statt PD).
         self._damping  = float(physics_cfg["joint_damping"])
         self._max_vel  = float(physics_cfg["max_velocity"])
 
         self.joint_index  = self._build_joint_index()
         self.joint_limits = self._load_joint_limits()
         self._q_target: list[float] = [0.0] * len(CONTROL_JOINTS)
+
+        # Bookkeeping für Non-Backdrivable Enforcement (siehe enforce_non_backdrivable).
+        # _q_locked: Position auf die das Gelenk vom simulierten Getriebe festgehalten wird.
+        # Folgt q_measured nach oben (Finger arbeitet) und q_target nach unten (Motor öffnet).
+        self._q_locked = [0.0] * len(CONTROL_JOINTS)
 
         self._init_dynamics()
         self._setup_dip_constraints()
@@ -86,8 +92,9 @@ class HandModel:
     def _load_joint_limits(self) -> dict[str, tuple[float, float]]:
         # Liest physikalische Gelenkgrenzen aus dem URDF (in rad).
         # Fallback auf gemessene AR10-Grenzen falls URDF keine gültigen Limits enthält.
+        # CONTROL_JOINTS und DIP-Joints, weil non-backdrivable Enforcement beide braucht.
         limits: dict[str, tuple[float, float]] = {}
-        for name in CONTROL_JOINTS:
+        for name in CONTROL_JOINTS + list(DIP_MIMIC_MAP.values()):
             info = p.getJointInfo(self.hand_id, self.joint_index[name], physicsClientId=self._cid)
             lo, hi = float(info[8]), float(info[9])
             if lo >= hi:
@@ -148,8 +155,6 @@ class HandModel:
                 targetPosition=angle,
                 maxVelocity=self._max_vel,
                 force=self._motor_force,
-                positionGain=self._pos_gain,
-                velocityGain=self._vel_gain,
                 physicsClientId=self._cid,
             )
 
@@ -168,7 +173,56 @@ class HandModel:
             p.resetJointState(self.hand_id, self.joint_index[dip_name],
                                DIP_MULTIPLIER * pip_angle + DIP_OFFSET,
                                physicsClientId=self._cid)
+        # Non-Backdrivable Bookkeeping auf die neue Startpose zurücksetzen.
+        self._q_locked = list(q)
         self.apply_q_target(q)
+
+    def enforce_non_backdrivable(self) -> None:
+        # Simuliert das 100:1 Firgelli-Getriebe symmetrisch: das Gelenk kann ausschließlich
+        # durch den Motor bewegt werden. Externe Kräfte können es weder zurück- noch
+        # weiter-vor-drücken. q_measured ist nach jedem Substep auf [q_locked, q_target] gedeckelt.
+        # _q_locked folgt q_target nach unten (Motor öffnet) und q_measured nach oben (Motor schließt).
+        for idx, name in enumerate(CONTROL_JOINTS):
+            joint_idx = self.joint_index[name]
+            lo, hi = self.joint_limits[name]
+            pos = float(p.getJointState(self.hand_id, joint_idx, physicsClientId=self._cid)[0])
+            norm = max(0.0, min(1.0, (pos - lo) / (hi - lo)))
+            qt   = self._q_target[idx]
+
+            # Motor öffnet aktiv -> Lock zieht nach unten mit dem Target.
+            if qt < self._q_locked[idx]:
+                self._q_locked[idx] = qt
+            # Finger advanciert. Lock folgt, aber nie über das kommandierte Target hinaus.
+            if norm > self._q_locked[idx]:
+                self._q_locked[idx] = min(norm, qt)
+
+            # Position auf [q_locked, q_target] clampen wenn externe Kraft sie rausgedrückt hat.
+            if norm < self._q_locked[idx]:
+                # Externe Kraft drückt rückwärts -> festhalten.
+                angle = lo + self._q_locked[idx] * (hi - lo)
+                p.resetJointState(self.hand_id, joint_idx, angle, 0.0,
+                                   physicsClientId=self._cid)
+            elif norm > qt:
+                # Externe Kraft (z.B. schräger Objekt-Kontakt) hat den Finger weiter geschlossen
+                # als der Motor das kommandiert hat -> auf q_target zurücknehmen.
+                angle = lo + qt * (hi - lo)
+                p.resetJointState(self.hand_id, joint_idx, angle, 0.0,
+                                   physicsClientId=self._cid)
+
+        # DIPs (Fingerspitzen-Gelenke) direkt auf die gear-korrekte Position relativ zum
+        # gerade geclampten PIP setzen. Das Gear-Constraint allein kann unter schrägen
+        # Kontakten kurzzeitig "abreißen" bevor der Solver es wieder einfängt - durch
+        # explizites resetJointState wird der Sollwert pro Substep hart durchgesetzt.
+        for pip_name, dip_name in DIP_MIMIC_MAP.items():
+            pip_joint_idx = self.joint_index[pip_name]
+            dip_joint_idx = self.joint_index[dip_name]
+            dip_lo, dip_hi = self.joint_limits[dip_name]
+            pip_angle = float(p.getJointState(self.hand_id, pip_joint_idx,
+                                                physicsClientId=self._cid)[0])
+            target_dip_angle = DIP_MULTIPLIER * pip_angle + DIP_OFFSET
+            target_dip_angle = max(dip_lo, min(dip_hi, target_dip_angle))
+            p.resetJointState(self.hand_id, dip_joint_idx,
+                               target_dip_angle, 0.0, physicsClientId=self._cid)
 
     def reset_open_pose(self) -> None:
         self.teleport_to([0.0] * len(CONTROL_JOINTS))

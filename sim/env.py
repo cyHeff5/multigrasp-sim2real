@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections
 import time
 from pathlib import Path
 
@@ -16,8 +15,16 @@ from sim.reward   import step_reward, terminal_reward
 from sim.sampler  import sample_object_spec
 
 
-_PEDESTAL_RADIUS = 0.02
-_SPAWN_XY        = [0.0, 0.0]
+_SPAWN_XY = [0.0, 0.0]
+
+# Default-Radius des Sim-Podests (Hardware-Setup: 2 cm Magnet-Plattform).
+# Kann pro Config über episode.pedestal_radius überschrieben werden.
+_DEFAULT_PEDESTAL_RADIUS = 0.02
+
+# Schwellwert für "Objekt heruntergefallen": wenn der Schwerpunkt unter 30% der
+# Podest-Höhe gesunken ist, ist das Objekt eindeutig vom Podest geschoben worden.
+# 0.3 gewählt damit kleine Verschiebungen beim ersten Kontakt nicht als Drop zählen.
+_DROP_HEIGHT_FRACTION = 0.3
 
 _HAND_URDF = str(
     Path(__file__).resolve().parent.parent / "assets" / "ar10_description" / "urdf" / "ar10.urdf"
@@ -26,8 +33,9 @@ _HAND_URDF = str(
 
 class GraspEnv(gymnasium.Env):
     # Config-getriebenes Gymnasium-Environment für AR10 Greiftraining.
-    # Observation: binär pro Finger (1 Bit = Kontakt ja/nein).
-    # Action: [-1, 1] pro aktivem Gelenk; nur servo0 ist bidirektional, alle anderen nur schließend.
+    # Observation: [contact_bits_pro_finger, q_target_pro_aktivem_joint] - binäres Kontakt-Signal
+    # plus Propriozeption damit der Markov-State erhalten bleibt.
+    # Action: MultiDiscrete - servo0 hat {0: open, 1: stay, 2: close}, alle anderen {0: stay, 1: close}.
 
     metadata = {"render_modes": ["human"]}
 
@@ -46,8 +54,11 @@ class GraspEnv(gymnasium.Env):
             shape=(len(self._fingers) + len(self._active),),
             dtype=np.float32,
         )
-        self.action_space = gymnasium.spaces.Box(
-            low=-1.0, high=1.0, shape=(len(self._active),), dtype=np.float32,
+        # Discrete close-or-stay pro Finger-Joint; Daumen-Abduktion bekommt 3 Optionen (offen/stay/zu).
+        # Halbiert die "verschwendete" Action-Mass die Box-Gauss bei max(0, a) hatte und macht
+        # den Random-Walk zum Start produktiver.
+        self.action_space = gymnasium.spaces.MultiDiscrete(
+            [3 if j == "servo0" else 2 for j in self._active]
         )
 
         self._rng = np.random.default_rng()
@@ -72,13 +83,17 @@ class GraspEnv(gymnasium.Env):
         )
         p.setGravity(0, 0, -9.81, physicsClientId=self._cid)
         p.setTimeStep(1.0 / self.cfg["episode"]["sim_hz"], physicsClientId=self._cid)
+        # Hohe Solver-Iterations für rigide Kontakte mit mehreren simultanen Berührungen
+        # (Finger + Objekt + Pedestal). PyBullet-Default 50 ist für Greifsim zu wenig.
+        p.setPhysicsEngineParameter(numSolverIterations=200, physicsClientId=self._cid)
         p.loadURDF(pybullet_data.getDataPath() + "/plane.urdf", physicsClientId=self._cid)
 
-        # Podest
+        # Podest - Maße aus der Config, ansonsten Hardware-Defaults.
         ped_h = self.cfg["episode"].get("pedestal_height", 0.04)
-        col = p.createCollisionShape(p.GEOM_CYLINDER, radius=_PEDESTAL_RADIUS,
+        ped_r = self.cfg["episode"].get("pedestal_radius", _DEFAULT_PEDESTAL_RADIUS)
+        col = p.createCollisionShape(p.GEOM_CYLINDER, radius=ped_r,
                                       height=ped_h, physicsClientId=self._cid)
-        vis = p.createVisualShape(p.GEOM_CYLINDER, radius=_PEDESTAL_RADIUS,
+        vis = p.createVisualShape(p.GEOM_CYLINDER, radius=ped_r,
                                    length=ped_h, rgbaColor=[0.5, 0.5, 0.5, 1.0],
                                    physicsClientId=self._cid)
         self._pedestal_id = p.createMultiBody(
@@ -163,14 +178,17 @@ class GraspEnv(gymnasium.Env):
         self._lift_triggered         = False
         self._stabilization_left     = 0
         self._pedestal_hit_ever      = False
+        self._n_contact_prev         = 0
 
         return self._observation(), {
             "grasp_type": self.grasp_type,
             "shape":      self._obj_spec["shape"],
         }
 
-    # Step 
+    # Step
     def step(self, action: np.ndarray):
+        n_contact_prev = self._n_contact_prev
+
         delta  = self._action_to_delta(action)
         next_q = [max(0.0, min(1.0, q + d)) for q, d in zip(self._hand.q_target(), delta)]
         self._apply_pip_caps(next_q)
@@ -182,12 +200,16 @@ class GraspEnv(gymnasium.Env):
                 apply_pedestal_magnet(self._obj.object_id, _SPAWN_XY,
                                        self.cfg["magnet"]["k"], self._cid)
             p.stepSimulation(physicsClientId=self._cid)
+            # Firgelli-Getriebe ist nicht-backdrivable: Gelenke die schon vorne waren
+            # können vom Objekt nicht zurückgedrückt werden. Pro Substep durchsetzen.
+            self._hand.enforce_non_backdrivable()
             if self.render_mode == "human":
                 time.sleep(1.0 / self.cfg["episode"]["sim_hz"])
 
         self._step_count += 1
         obs       = self._observation()
         n_contact = int(obs[:len(self._fingers)].sum())
+        self._n_contact_prev = n_contact
 
         # Trigger State Machine (Westling & Johansson 1984):
         # trigger_confirmation_steps consecutive frames mit >= trigger_n Kontakten -> Trigger.
@@ -204,7 +226,8 @@ class GraspEnv(gymnasium.Env):
         pedestal_now = self._check_pedestal_contact()
         if pedestal_now:
             self._pedestal_hit_ever = True
-        reward = step_reward(n_contact, self.cfg["n_target"], pedestal_now, self.cfg["reward"])
+        reward = step_reward(n_contact_prev, n_contact,
+                              self.cfg["n_target"], pedestal_now, self.cfg["reward"])
 
         # Drop: Objekt zu stark gekippt oder unter Podest-Niveau gefallen.
         if self._object_dropped():
@@ -250,14 +273,15 @@ class GraspEnv(gymnasium.Env):
 
     # Action mapping
     def _action_to_delta(self, action: np.ndarray) -> list[float]:
-        # servo0 (Daumen-Abduktion) bidirektional, alle anderen Joints nur schließend.
+        # MultiDiscrete: servo0 hat {0: open, 1: stay, 2: close}, alle anderen {0: stay, 1: close}.
         delta = [0.0] * len(CONTROL_JOINTS)
         for i, joint_name in enumerate(self._active):
-            a = float(action[i])
+            a = int(action[i])
             if joint_name == "servo0":
-                d = a * self.cfg["action"]["thumb_abduction_delta"]
+                step = self.cfg["action"]["thumb_abduction_delta"]
+                d = (-1.0 if a == 0 else 1.0 if a == 2 else 0.0) * step
             else:
-                d = max(0.0, a) * self.cfg["action"]["delta_norm"]
+                d = a * self.cfg["action"]["delta_norm"]
             delta[CONTROL_JOINTS.index(joint_name)] = d
         return delta
 
@@ -285,13 +309,15 @@ class GraspEnv(gymnasium.Env):
         return False
 
     def _object_dropped(self) -> bool:
+        # Drop wenn das Objekt über drop_tilt_rad gekippt oder unter _DROP_HEIGHT_FRACTION
+        # der Podest-Höhe gefallen ist (= eindeutig vom Podest geschoben).
         _, quat = p.getBasePositionAndOrientation(
             self._obj.object_id, physicsClientId=self._cid,
         )
         euler = p.getEulerFromQuaternion(quat)
         tilt  = max(abs(euler[0]), abs(euler[1]))
         return (tilt > self.cfg["lift"]["drop_tilt_rad"]
-                or self._obj.height() < self._pedestal_h * 0.3)
+                or self._obj.height() < self._pedestal_h * _DROP_HEIGHT_FRACTION)
 
     def _run_lift_test(self) -> bool:
         # Bewegt den Anchor-Body (nicht die Hand direkt) um lift_height nach oben.
@@ -311,6 +337,7 @@ class GraspEnv(gymnasium.Env):
                     self._anchor_id, new_pos, quat, physicsClientId=self._cid,
                 )
             p.stepSimulation(physicsClientId=self._cid)
+            self._hand.enforce_non_backdrivable()
             if self.render_mode == "human":
                 time.sleep(1.0 / self.cfg["episode"]["sim_hz"])
 
