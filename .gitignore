@@ -220,3 +220,8 @@ __marimo__/
 # Trainierte Modelle und TensorBoard-Logs (zu groß für git)
 artifacts/models/
 artifacts/logs/
+
+# LaTeX build artifacts
+*.aux
+*.synctex.gz
+rl_formulation.pdf
