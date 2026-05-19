@@ -52,7 +52,7 @@ sampler:
   cylinder:      {thickness_cm: {min: 1.0, max: 3.0}, height_cm: {min: 5.0, max: 12.0}}
   rect_cylinder: {thickness_cm: {min: 1.0, max: 3.0}, width_cm:  {min: 1.0, max: 3.0}, height_cm: {min: 5.0, max: 12.0}}
   mass_kg:          {min: 0.05, max: 0.25}    # pro Episode randomisiert
-  lateral_friction: {min: 0.8,  max: 1.5}    # pro Episode randomisiert
+  lateral_friction: {min: 0.3,  max: 1.2}    # pro Episode randomisiert
 
 pregrasp:
   distance_m:  0.004                # Abstand Hand-Referenzpunkt zur Objekt-Oberfläche
