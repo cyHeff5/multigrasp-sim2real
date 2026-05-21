@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import time
 from pathlib import Path
 
@@ -124,7 +125,15 @@ class GraspEnv(gymnasium.Env):
         pre_cfg  = self.cfg["pregrasp"]
         pregrasp = opts.get("pregrasp")
         if pregrasp is not None:
-            hand_pos, hand_quat = list(pregrasp[0]), list(pregrasp[1])
+            # Feste Pregrasp-Pose (Benchmark): Orientierung 1:1 übernehmen,
+            # aber denselben XY/Z-Positions-Jitter wie compute_pregrasp addieren,
+            # damit der Benchmark die reale Positionierungsunsicherheit des
+            # Sawyer-Arms mit abbildet.
+            hand_pos  = list(pregrasp[0])
+            hand_quat = list(pregrasp[1])
+            hand_pos[0] += self._rng.uniform(-pre_cfg["jitter_xy_m"], pre_cfg["jitter_xy_m"])
+            hand_pos[1] += self._rng.uniform(-pre_cfg["jitter_xy_m"], pre_cfg["jitter_xy_m"])
+            hand_pos[2] += self._rng.uniform(-pre_cfg["jitter_z_m"],  pre_cfg["jitter_z_m"])
         else:
             hand_pos, hand_quat, _ = compute_pregrasp(
                 self.grasp_type, self._obj.position(), self._obj_spec, self._rng,
@@ -179,6 +188,16 @@ class GraspEnv(gymnasium.Env):
         self._stabilization_left     = 0
         self._pedestal_hit_ever      = False
         self._n_contact_prev         = 0
+
+        # Referenz-Orientierung für den Drop-Check: die Objektachse, die zum
+        # Episodenstart nach oben zeigt. Kippung wird relativ dazu gemessen,
+        # damit bewusst gekippt gespawnte Benchmark-Teile (Seiten-/Über-Kopf-
+        # Greifpose) nicht sofort als Drop zählen.
+        _, q0 = p.getBasePositionAndOrientation(
+            self._obj.object_id, physicsClientId=self._cid,
+        )
+        m0 = p.getMatrixFromQuaternion(q0)
+        self._obj_up_local = (m0[6], m0[7], m0[8])
 
         return self._observation(), {
             "grasp_type": self.grasp_type,
@@ -309,13 +328,19 @@ class GraspEnv(gymnasium.Env):
         return False
 
     def _object_dropped(self) -> bool:
-        # Drop wenn das Objekt über drop_tilt_rad gekippt oder unter _DROP_HEIGHT_FRACTION
-        # der Podest-Höhe gefallen ist (= eindeutig vom Podest geschoben).
+        # Drop wenn das Objekt relativ zur Spawn-Lage über drop_tilt_rad gekippt
+        # oder unter _DROP_HEIGHT_FRACTION der Podest-Höhe gefallen ist.
+        # Kippung wird relativ zur Start-Orientierung gemessen, weil Benchmark-
+        # Teile bewusst gekippt spawnen können — absoluter Winkel würde die
+        # Episode sofort beenden. Yaw bleibt wie bisher unberücksichtigt.
         _, quat = p.getBasePositionAndOrientation(
             self._obj.object_id, physicsClientId=self._cid,
         )
-        euler = p.getEulerFromQuaternion(quat)
-        tilt  = max(abs(euler[0]), abs(euler[1]))
+        m = p.getMatrixFromQuaternion(quat)
+        ux, uy, uz = self._obj_up_local
+        # z-Komponente der Weltrichtung der ursprünglichen Hochachse = cos(Kippwinkel).
+        cos_tilt = m[6] * ux + m[7] * uy + m[8] * uz
+        tilt = math.acos(max(-1.0, min(1.0, cos_tilt)))
         return (tilt > self.cfg["lift"]["drop_tilt_rad"]
                 or self._obj.height() < self._pedestal_h * _DROP_HEIGHT_FRACTION)
 
