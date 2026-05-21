@@ -36,7 +36,7 @@ reward:
   w_pedestal:    0.2               # Penalty wenn Objekt das Podest berührt
   r_step:       -0.01              # Strafe pro Schritt, zwingt zur Effizienz
   r_lift_success: 10.0
-  r_lift_fail:   -2.0              # geringer als Power weil Precision-Trigger empfindlicher ist
+  r_lift_fail:   -5.0              # auf Power-Wert vereinheitlicht; Ablation gegen den alten -2.0-Lauf
 
 physics:
   motor_force:        {min: 4.0, max: 6.0}    # Motormoment in Nm, pro Episode randomisiert
