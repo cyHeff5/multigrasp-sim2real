@@ -31,12 +31,12 @@ observation:
   threshold: 0.05
 
 reward:
-  w_contact:     0.2               # einmaliger Bonus pro neu hinzugekommenem Finger-Kontakt
+  w_contact:     0.1               # einmaliger Bonus pro neu hinzugekommenem Finger-Kontakt
   w_hold:        0.005             # kleiner Bonus pro Step für jeden aktuellen Kontakt
-  w_pedestal:    0.2               # Penalty wenn Objekt das Podest berührt
+  w_pedestal:    0.05              # Penalty wenn Objekt das Podest berührt
   r_step:       -0.01              # Strafe pro Schritt, zwingt zur Effizienz
   r_lift_success: 10.0
-  r_lift_fail:   -5.0              # auf Power-Wert vereinheitlicht; Ablation gegen den alten -2.0-Lauf
+  r_lift_fail:   -5.0
 
 physics:
   motor_force:        {min: 4.0, max: 6.0}    # Motormoment in Nm, pro Episode randomisiert
